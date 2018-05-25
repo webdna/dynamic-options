@@ -1,0 +1,28 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Dynamic Options plugin for Craft CMS
+ *
+ * DynamicOptionsField Field Settings
+ *
+ * @author    Kurious Agency
+ * @copyright Copyright (c) 2018 Kurious Agency
+ * @link      https://kurious.agency
+ * @package   DynamicOptions
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{# {% do view.registerAssetBundle("kuriousagency\\dynamicoptions\\assetbundles\\dynamicoptions\\DynamicOptionsAsset") %} #}
+
+{{ forms.textareaField({
+    label: 'Dropdown Options',
+    instructions: 'JSON format',
+    id: id,
+    name: name,
+	class: 'code',
+	rows: 7,
+    value: field['json']})
+}}
