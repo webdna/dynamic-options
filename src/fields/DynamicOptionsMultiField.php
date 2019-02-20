@@ -135,8 +135,9 @@ class DynamicOptionsMultiField extends Field
             'prefix' => Craft::$app->getView()->namespaceInputId(''),
             ];
         $jsonVars = Json::encode($jsonVars);
+        $varName = str_replace('-','',$namespacedId);
         Craft::$app->getView()->registerJs(
-            "$('#".$namespacedId."').selectize({
+            "var $".$varName."Selectize = $('#".$namespacedId."').selectize({
             plugins: ['remove_button'],
             dropdownParent: 'body'
             });
@@ -154,7 +155,7 @@ class DynamicOptionsMultiField extends Field
             }
             });
         
-            $('[name=".$this->handle."]:checked').trigger('change');");
+            $('[name=".$this->handle."]:checked').trigger('change');",3);
 
         // Render the input template
         return Craft::$app->getView()->renderTemplate(
