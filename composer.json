@@ -1,33 +1,31 @@
 {
-	"name": "kuriousagency/dynamic-options",
-	"description": "A fieldtype that renders a dropdown based on twig code.",
-	"type": "craft-plugin",
-	"keywords": ["craft", "cms", "craftcms", "craft-plugin", "dynamic options"],
-	"support": {
-		"docs": "https://github.com/KuriousAgency/dynamic-options/blob/master/README.md",
-		"issues": "https://github.com/KuriousAgency/dynamic-options/issues"
-	},
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Kurious Agency",
-			"homepage": "https://kurious.agency"
-		}
-	],
-	"require": {
-		"craftcms/cms": "^3.0.0-RC1"
-	},
-	"autoload": {
-		"psr-4": {
-			"kuriousagency\\dynamicoptions\\": "src/"
-		}
-	},
-	"extra": {
-		"name": "Dynamic Options",
-		"handle": "dynamic-options",
-		"hasCpSettings": false,
-		"hasCpSection": false,
-		"changelogUrl": "https://raw.githubusercontent.com/KuriousAgency/dynamic-options/master/CHANGELOG.md",
-		"class": "kuriousagency\\dynamicoptions\\DynamicOptions"
-	}
+    "name": "kuriousagency/dynamic-options",
+    "description": "A fieldtype that renders a dropdown based on twig code.",
+    "type": "craft-plugin",
+    "keywords": ["craft", "cms", "craftcms", "craft-plugin", "dynamic options"],
+    "support": {
+        "docs": "https://github.com/KuriousAgency/dynamic-options/blob/master/README.md",
+        "issues": "https://github.com/KuriousAgency/dynamic-options/issues"
+    },
+    "license": "MIT",
+    "authors": [{
+        "name": "Kurious Agency",
+        "homepage": "https://kurious.agency"
+    }],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+            "kuriousagency\\dynamicoptions\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Dynamic Options",
+        "handle": "dynamic-options",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/KuriousAgency/dynamic-options/master/CHANGELOG.md",
+        "class": "kuriousagency\\dynamicoptions\\DynamicOptions"
+    }
 }

@@ -11,6 +11,8 @@
 namespace kuriousagency\dynamicoptions;
 
 use kuriousagency\dynamicoptions\fields\DynamicOptionsField as DynamicOptionsFieldField;
+use kuriousagency\dynamicoptions\fields\DynamicOptionsMultiField as DynamicOptionsMultiFieldField;
+
 
 use Craft;
 use craft\base\Plugin;
@@ -63,6 +65,7 @@ class DynamicOptions extends Plugin
             Fields::EVENT_REGISTER_FIELD_TYPES,
             function (RegisterComponentTypesEvent $event) {
                 $event->types[] = DynamicOptionsFieldField::class;
+                $event->types[] = DynamicOptionsMultiFieldField::class;
             }
         );
 
