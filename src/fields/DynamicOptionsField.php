@@ -124,7 +124,7 @@ class DynamicOptionsField extends Field
 		$variables['element'] = $element;
 		//$variables['model'] = $this->model;
 
-		$options = Json::decode('['.Craft::$app->getView()->renderString($this->json, $variables).']', true);
+		$options = Json::decode(Craft::$app->getView()->renderString($this->json, $variables), true);
 		Craft::$app->getView()->setTemplateMode($oldMode);
 
         // Variables to pass down to our field JavaScript to let it namespace properly
