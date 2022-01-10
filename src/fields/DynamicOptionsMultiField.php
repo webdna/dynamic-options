@@ -163,7 +163,7 @@ class DynamicOptionsMultiField extends Field
 			'_includes/forms/multiselect',
             [
                 'name' => $this->handle,
-                'values' => json_decode($value,true),
+                'values' => is_array($value) ? $value : json_decode($value,true),
 				'field' => $this,
 				'options' => $options,
                 'id' => $id,
