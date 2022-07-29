@@ -4,14 +4,14 @@
  *
  * A fieldtype that renders a dropdown based on twig code.
  *
- * @link      https://kurious.agency
- * @copyright Copyright (c) 2018 Kurious Agency
+ * @link      https://webdna.co.uk
+ * @copyright Copyright (c) 2018 webdna
  */
 
-namespace kuriousagency\dynamicoptions;
+namespace webdna\dynamicoptions;
 
-use kuriousagency\dynamicoptions\fields\DynamicOptionsField as DynamicOptionsFieldField;
-use kuriousagency\dynamicoptions\fields\DynamicOptionsMultiField as DynamicOptionsMultiFieldField;
+use webdna\dynamicoptions\fields\DynamicOptionsField as DynamicOptionsFieldField;
+use webdna\dynamicoptions\fields\DynamicOptionsMultiField as DynamicOptionsMultiFieldField;
 
 
 use Craft;
@@ -26,7 +26,7 @@ use yii\base\Event;
 /**
  * Class DynamicOptions
  *
- * @author    Kurious Agency
+ * @author    webdna
  * @package   DynamicOptions
  * @since     1.0.0
  *
@@ -39,7 +39,7 @@ class DynamicOptions extends Plugin
     /**
      * @var DynamicOptions
      */
-    public static $plugin;
+    public static Plugin $plugin;
 
     // Public Properties
     // =========================================================================
@@ -47,7 +47,7 @@ class DynamicOptions extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.0.0';
 
     // Public Methods
     // =========================================================================
@@ -55,7 +55,7 @@ class DynamicOptions extends Plugin
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         self::$plugin = $this;

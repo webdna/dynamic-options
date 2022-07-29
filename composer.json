@@ -1,23 +1,24 @@
 {
-    "name": "kuriousagency/dynamic-options",
+    "name": "webdna/dynamic-options",
     "description": "A fieldtype that renders a dropdown based on twig code.",
     "type": "craft-plugin",
+	"version": "2.0.0",
     "keywords": ["craft", "cms", "craftcms", "craft-plugin", "dynamic options"],
     "support": {
-        "docs": "https://github.com/KuriousAgency/dynamic-options/blob/master/README.md",
-        "issues": "https://github.com/KuriousAgency/dynamic-options/issues"
+        "docs": "https://github.com/webdna/dynamic-options/blob/master/README.md",
+        "issues": "https://github.com/webdna/dynamic-options/issues"
     },
     "license": "MIT",
     "authors": [{
-        "name": "Kurious Agency",
-        "homepage": "https://kurious.agency"
+        "name": "webdna",
+        "homepage": "https://webdna.co.uk"
     }],
     "require": {
-        "craftcms/cms": "^3.0.0-RC1"
+        "craftcms/cms": "^4.0.0"
     },
     "autoload": {
         "psr-4": {
-            "kuriousagency\\dynamicoptions\\": "src/"
+            "webdna\\dynamicoptions\\": "src/"
         }
     },
     "extra": {
@@ -25,7 +26,7 @@
         "handle": "dynamic-options",
         "hasCpSettings": false,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/KuriousAgency/dynamic-options/master/CHANGELOG.md",
-        "class": "kuriousagency\\dynamicoptions\\DynamicOptions"
+        "changelogUrl": "https://raw.githubusercontent.com/webdna/dynamic-options/master/CHANGELOG.md",
+        "class": "webdna\\dynamicoptions\\DynamicOptions"
     }
 }

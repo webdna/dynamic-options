@@ -4,7 +4,7 @@ A fieldtype that renders a dropdown based on twig code.
 
 ## Requirements
 
-This plugin requires Craft CMS 3.0.0-beta.23 or later.
+This plugin requires Craft CMS 4.0.0 or later.
 
 ## Installation
 
@@ -16,7 +16,7 @@ To install the plugin, follow these instructions.
 
 2.  Then tell Composer to load the plugin:
 
-        composer require kuriousagency/dynamic-options
+        composer require webdna/dynamic-options
 
 3.  In the Control Panel, go to Settings → Plugins and click the “Install” button for Dynamic Options.
 
@@ -28,4 +28,4 @@ Dynamic Options give you the ability to populate a dropdown field type with opti
 
 Write twig code or use twig to include an external twig file that renders json.
 
-Brought to you by [Kurious Agency](https://kurious.agency)
+Brought to you by [webdna](https://webdna.co.uk)

@@ -4,18 +4,18 @@
  *
  * A fieldtype that renders a dropdown based on twig code.
  *
- * @link      https://kurious.agency
- * @copyright Copyright (c) 2018 Kurious Agency
+ * @link      https://webdna.co.uk
+ * @copyright Copyright (c) 2018 webdna
  */
 
-namespace kuriousagency\dynamicoptions\assetbundles\dynamicoptionsfieldfield;
+namespace webdna\dynamicoptions\assetbundles\dynamicoptionsfieldfield;
 
 use Craft;
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
 
 /**
- * @author    Kurious Agency
+ * @author    webdna
  * @package   DynamicOptions
  * @since     1.0.0
  */
@@ -27,9 +27,9 @@ class DynamicOptionsFieldFieldAsset extends AssetBundle
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
-        $this->sourcePath = "@kuriousagency/dynamicoptions/assetbundles/dynamicoptionsfieldfield/dist";
+        $this->sourcePath = "@webdna/dynamicoptions/assetbundles/dynamicoptionsfieldfield/dist";
 
         $this->depends = [
             CpAsset::class,

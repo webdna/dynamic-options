@@ -4,12 +4,12 @@
  *
  * A fieldtype that renders a dropdown based on twig code.
  *
- * @link      https://kurious.agency
- * @copyright Copyright (c) 2018 Kurious Agency
+ * @link      https://webdna.co.uk
+ * @copyright Copyright (c) 2018 webdna
  */
 
 /**
- * @author    Kurious Agency
+ * @author    webdna
  * @package   DynamicOptions
  * @since     1.0.0
  */

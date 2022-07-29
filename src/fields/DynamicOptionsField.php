@@ -4,14 +4,14 @@
  *
  * A fieldtype that renders a dropdown based on twig code.
  *
- * @link      https://kurious.agency
- * @copyright Copyright (c) 2018 Kurious Agency
+ * @link      https://webdna.co.uk
+ * @copyright Copyright (c) 2018 webdna
  */
 
-namespace kuriousagency\dynamicoptions\fields;
+namespace webdna\dynamicoptions\fields;
 
-use kuriousagency\dynamicoptions\DynamicOptions;
-use kuriousagency\dynamicoptions\assetbundles\dynamicoptionsfieldfield\DynamicOptionsFieldFieldAsset;
+use webdna\dynamicoptions\DynamicOptions;
+use webdna\dynamicoptions\assetbundles\dynamicoptionsfieldfield\DynamicOptionsFieldFieldAsset;
 
 use Craft;
 use craft\base\ElementInterface;
@@ -21,7 +21,7 @@ use yii\db\Schema;
 use craft\helpers\Json;
 
 /**
- * @author    Kurious Agency
+ * @author    webdna
  * @package   DynamicOptions
  * @since     1.0.0
  */
@@ -33,7 +33,7 @@ class DynamicOptionsField extends Field
     /**
      * @var string
      */
-    public $json = '';
+    public string $json = '';
 
     // Static Methods
     // =========================================================================
@@ -52,7 +52,7 @@ class DynamicOptionsField extends Field
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         $rules = parent::rules();
         $rules = array_merge($rules, [
@@ -72,7 +72,7 @@ class DynamicOptionsField extends Field
     /**
      * @inheritdoc
      */
-    public function normalizeValue($value, ElementInterface $element = null)
+    public function normalizeValue(mixed $value, ElementInterface $element = null): mixed
     {
         return $value;
     }
@@ -80,7 +80,7 @@ class DynamicOptionsField extends Field
     /**
      * @inheritdoc
      */
-    public function serializeValue($value, ElementInterface $element = null)
+    public function serializeValue(mixed $value, ElementInterface $element = null): mixed
     {
         return parent::serializeValue($value, $element);
     }
@@ -88,15 +88,15 @@ class DynamicOptionsField extends Field
     /**
      * @inheritdoc
      */
-    public function getSettingsHtml()
+    public function getSettingsHtml(): ?string
     {
         // Render the settings template
         return Craft::$app->getView()->renderTemplate(
             'dynamic-options/_components/fields/DynamicOptionsField_settings',
             [
-				'field' => $this,
-				'id' => 'json',
-				'name' => 'json',
+                'field' => $this,
+                'id' => 'json',
+                'name' => 'json',
             ]
         );
     }
@@ -104,28 +104,28 @@ class DynamicOptionsField extends Field
     /**
      * @inheritdoc
      */
-    public function getInputHtml($value, ElementInterface $element = null): string
+    public function getInputHtml(mixed $value, ElementInterface $element = null): string
     {
         // Register our asset bundle
         //Craft::$app->getView()->registerAssetBundle(DynamicOptionsFieldFieldAsset::class);
 
         // Get our id and namespace
         $id = Craft::$app->getView()->formatInputId($this->handle);
-		$namespacedId = Craft::$app->getView()->namespaceInputId($id);
-		
-		$oldMode = Craft::$app->getView()->getTemplateMode();
-		Craft::$app->getView()->setTemplateMode('site');
+        $namespacedId = Craft::$app->getView()->namespaceInputId($id);
 
-		$variables = [];
-		/**foreach(Craft::$app->globals->getAllSets() as $globalSet)
-		{
-			$variables[$globalSet->handle] = $globalSet;
-		}*/
-		$variables['element'] = $element;
-		//$variables['model'] = $this->model;
+        $oldMode = Craft::$app->getView()->getTemplateMode();
+        Craft::$app->getView()->setTemplateMode('site');
 
-		$options = Json::decode('['.Craft::$app->getView()->renderString($this->json, $variables).']', true);
-		Craft::$app->getView()->setTemplateMode($oldMode);
+        $variables = [];
+        /**foreach(Craft::$app->globals->getAllSets() as $globalSet)
+        {
+            $variables[$globalSet->handle] = $globalSet;
+        }*/
+        $variables['element'] = $element;
+        //$variables['model'] = $this->model;
+
+        $options = Json::decode('['.Craft::$app->getView()->renderString($this->json, $variables).']', true);
+        Craft::$app->getView()->setTemplateMode($oldMode);
 
         // Variables to pass down to our field JavaScript to let it namespace properly
         $jsonVars = [
@@ -139,13 +139,13 @@ class DynamicOptionsField extends Field
 
         // Render the input template
         return Craft::$app->getView()->renderTemplate(
-			//'dynamic-options/_components/fields/DynamicOptionsField_input',
-			'_includes/forms/select',
+            //'dynamic-options/_components/fields/DynamicOptionsField_input',
+            '_includes/forms/select',
             [
                 'name' => $this->handle,
                 'value' => $value,
-				'field' => $this,
-				'options' => $options,
+                'field' => $this,
+                'options' => $options,
                 'id' => $id,
                 'namespacedId' => $namespacedId,
             ]
