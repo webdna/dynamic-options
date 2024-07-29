@@ -2,7 +2,7 @@
     "name": "webdna/dynamic-options",
     "description": "A fieldtype that renders a dropdown based on twig code.",
     "type": "craft-plugin",
-	"version": "2.0.0",
+	"version": "3.0.0",
     "keywords": ["craft", "cms", "craftcms", "craft-plugin", "dynamic options"],
     "support": {
         "docs": "https://github.com/webdna/dynamic-options/blob/master/README.md",
@@ -14,7 +14,7 @@
         "homepage": "https://webdna.co.uk"
     }],
     "require": {
-        "craftcms/cms": "^4.0.0"
+        "craftcms/cms": "^5.0.0"
     },
     "autoload": {
         "psr-4": {
