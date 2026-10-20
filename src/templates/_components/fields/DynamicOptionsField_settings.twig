@@ -15,11 +15,9 @@
 
 {% import "_includes/forms" as forms %}
 
-{# {% do view.registerAssetBundle("webdna\\dynamicoptions\\assetbundles\\dynamicoptions\\DynamicOptionsAsset") %} #}
-
 {{ forms.textareaField({
-    label: 'Dropdown Options',
-    instructions: 'JSON format',
+    label: 'Dropdown Options'|t('dynamic-options'),
+    instructions: 'Twig that outputs the options as comma-separated JSON objects, such as `{"label": "Red", "value": "red"}`. `element` is the element being edited.'|t('dynamic-options'),
     id: id,
     name: name,
     class: 'code',

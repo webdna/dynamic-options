@@ -1,6 +1,6 @@
 <?php
 /**
- * Dynamic Options plugin for Craft CMS 3.x
+ * Dynamic Options plugin for Craft CMS
  *
  * A fieldtype that renders a dropdown based on twig code.
  *

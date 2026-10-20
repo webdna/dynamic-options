@@ -1,6 +1,6 @@
 <?php
 /**
- * Dynamic Options plugin for Craft CMS 3.x
+ * Dynamic Options plugin for Craft CMS
  *
  * A fieldtype that renders a dropdown based on twig code.
  *
@@ -16,8 +16,6 @@ use webdna\dynamicoptions\fields\DynamicOptionsMultiField as DynamicOptionsMulti
 
 use Craft;
 use craft\base\Plugin;
-use craft\services\Plugins;
-use craft\events\PluginEvent;
 use craft\services\Fields;
 use craft\events\RegisterComponentTypesEvent;
 
@@ -66,15 +64,6 @@ class DynamicOptions extends Plugin
             function (RegisterComponentTypesEvent $event) {
                 $event->types[] = DynamicOptionsFieldField::class;
                 $event->types[] = DynamicOptionsMultiFieldField::class;
-            }
-        );
-
-        Event::on(
-            Plugins::class,
-            Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
-                if ($event->plugin === $this) {
-                }
             }
         );
 

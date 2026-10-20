@@ -1,6 +1,6 @@
 <?php
 /**
- * Dynamic Options plugin for Craft CMS 3.x
+ * Dynamic Options plugin for Craft CMS
  *
  * A fieldtype that renders a dropdown based on twig code.
  *
@@ -10,31 +10,20 @@
 
 namespace webdna\dynamicoptions\fields;
 
-use webdna\dynamicoptions\DynamicOptions;
-use webdna\dynamicoptions\assetbundles\dynamicoptionsfieldfield\DynamicOptionsFieldFieldAsset;
-
 use Craft;
 use craft\base\ElementInterface;
-use craft\base\Field;
-use craft\helpers\Db;
-use yii\db\Schema;
+use craft\helpers\Cp;
+use craft\helpers\Html;
 use craft\helpers\Json;
+use yii\db\Schema;
 
 /**
  * @author    webdna
  * @package   DynamicOptions
  * @since     1.0.0
  */
-class DynamicOptionsMultiField extends Field
+class DynamicOptionsMultiField extends DynamicOptionsField
 {
-    // Public Properties
-    // =========================================================================
-
-    /**
-     * @var string
-     */
-    public string $json = '';
-
     // Static Methods
     // =========================================================================
 
@@ -46,130 +35,97 @@ class DynamicOptionsMultiField extends Field
         return Craft::t('dynamic-options', 'Dynamic Multi Options');
     }
 
+    /**
+     * @inheritdoc
+     */
+    public static function icon(): string
+    {
+        return 'list-check';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function phpType(): string
+    {
+        return 'string[]';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function dbType(): string
+    {
+        return Schema::TYPE_JSON;
+    }
+
     // Public Methods
     // =========================================================================
 
     /**
      * @inheritdoc
      */
-    public function rules(): array
+    public function normalizeValue(mixed $value, ?ElementInterface $element): mixed
     {
-        $rules = parent::rules();
-        $rules = array_merge($rules, [
-            ['json', 'string'],
-        ]);
-        return $rules;
+        // Content saved before Craft 5 holds the array as a JSON string
+        if (is_string($value)) {
+            $value = Json::decodeIfJson($value);
+        }
+
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        $values = [];
+        foreach ((array)$value as $item) {
+            if (is_scalar($item) && $item !== '') {
+                $values[] = (string)$item;
+            }
+        }
+
+        return $values;
     }
 
     /**
      * @inheritdoc
      */
-    public function getContentColumnType(): string
+    public function serializeValue(mixed $value, ?ElementInterface $element): mixed
     {
-        return Schema::TYPE_STRING;
+        return $this->normalizeValue($value, $element) ?: null;
     }
 
     /**
      * @inheritdoc
      */
-    public function normalizeValue(mixed $value, ElementInterface $element = null): mixed
+    public function getPreviewHtml(mixed $value, ElementInterface $element): string
     {
-        return $value;
+        return Html::encode(implode(', ', $this->normalizeValue($value, $element)));
     }
+
+    // Protected Methods
+    // =========================================================================
 
     /**
      * @inheritdoc
      */
-    public function serializeValue(mixed $value, ElementInterface $element = null): mixed
+    protected function inputHtml(mixed $value, ?ElementInterface $element, bool $inline): string
     {
-        return parent::serializeValue($value, $element);
-    }
+        $options = $this->options($element);
 
-    /**
-     * @inheritdoc
-     */
-    public function getSettingsHtml(): ?string
-    {
-        // Render the settings template
-        return Craft::$app->getView()->renderTemplate(
-            'dynamic-options/_components/fields/DynamicOptionsField_settings',
-            [
-                'field' => $this,
-                'id' => 'json',
-                'name' => 'json',
-            ]
-        );
-    }
+        if ($options === null) {
+            return $this->optionsErrorHtml();
+        }
 
-    /**
-     * @inheritdoc
-     */
-    public function getInputHtml(mixed $value, ElementInterface $element = null): string
-    {
-        // Register our asset bundle
-        //Craft::$app->getView()->registerAssetBundle(DynamicOptionsFieldFieldAsset::class);
+        $values = $this->normalizeValue($value, $element);
 
-        // Get our id and namespace
-        $id = Craft::$app->getView()->formatInputId($this->handle);
-        $namespacedId = Craft::$app->getView()->namespaceInputId($id);
-
-        $oldMode = Craft::$app->getView()->getTemplateMode();
-        Craft::$app->getView()->setTemplateMode('site');
-
-        $variables = [];
-        /**foreach(Craft::$app->globals->getAllSets() as $globalSet)
-        {
-            $variables[$globalSet->handle] = $globalSet;
-        }*/
-        $variables['element'] = $element;
-        //$variables['model'] = $this->model;
-
-        $options = Json::decode('['.Craft::$app->getView()->renderString($this->json, $variables).']', true);
-        Craft::$app->getView()->setTemplateMode($oldMode);
-
-        // Variables to pass down to our field JavaScript to let it namespace properly
-        $jsonVars = [
-            'id' => $id,
+        return Cp::selectizeHtml([
+            'id' => $this->getInputId(),
+            'describedBy' => $this->describedBy,
+            'class' => 'selectize',
             'name' => $this->handle,
-            'namespace' => $namespacedId,
-            'prefix' => Craft::$app->getView()->namespaceInputId(''),
-            ];
-        $jsonVars = Json::encode($jsonVars);
-        $varName = str_replace('-','',$namespacedId);
-        Craft::$app->getView()->registerJs(
-            "var $".$varName."Selectize = $('#".$namespacedId."').selectize({
-            plugins: ['remove_button'],
-            dropdownParent: 'body'
-            });
-
-            $('[name=".$this->handle."]').change(function () {
-            if (!$(this).is(':checked')) {
-            return;
-            }
-            if ($(this).val() * 1) {
-            $('#".$namespacedId."')[0].selectize.enable();
-            $('#".$namespacedId."-field').show();
-            } else {
-            $('#".$namespacedId."')[0].selectize.disable();
-            $('#".$namespacedId."-field').hide();
-            }
-            });
-
-            $('[name=".$this->handle."]:checked').trigger('change');",3);
-
-        // Render the input template
-        return Craft::$app->getView()->renderTemplate(
-            //'dynamic-options/_components/fields/DynamicOptionsField_input',
-            '_includes/forms/multiselect',
-            [
-                'name' => $this->handle,
-                'values' => is_array($value) ? $value : json_decode($value,true),
-                'field' => $this,
-                'options' => $options,
-                'id' => $id,
-                'namespacedId' => $namespacedId,
-                'class' => 'selectize fullwidth',
-            ]
-        );
+            'values' => $values,
+            'options' => $this->withStoredValues($options, $values),
+            'multi' => true,
+        ]);
     }
 }

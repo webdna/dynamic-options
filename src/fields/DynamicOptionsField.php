@@ -1,6 +1,6 @@
 <?php
 /**
- * Dynamic Options plugin for Craft CMS 3.x
+ * Dynamic Options plugin for Craft CMS
  *
  * A fieldtype that renders a dropdown based on twig code.
  *
@@ -10,15 +10,14 @@
 
 namespace webdna\dynamicoptions\fields;
 
-use webdna\dynamicoptions\DynamicOptions;
-use webdna\dynamicoptions\assetbundles\dynamicoptionsfieldfield\DynamicOptionsFieldFieldAsset;
-
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
-use craft\helpers\Db;
-use yii\db\Schema;
+use craft\helpers\Cp;
+use craft\helpers\Html;
 use craft\helpers\Json;
+use craft\web\View;
+use yii\db\Schema;
 
 /**
  * @author    webdna
@@ -31,7 +30,7 @@ class DynamicOptionsField extends Field
     // =========================================================================
 
     /**
-     * @var string
+     * @var string Twig that outputs the options as comma-separated JSON objects
      */
     public string $json = '';
 
@@ -44,6 +43,30 @@ class DynamicOptionsField extends Field
     public static function displayName(): string
     {
         return Craft::t('dynamic-options', 'Dynamic Options');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function icon(): string
+    {
+        return 'caret-down';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function phpType(): string
+    {
+        return 'string|null';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function dbType(): string
+    {
+        return Schema::TYPE_STRING;
     }
 
     // Public Methods
@@ -64,25 +87,13 @@ class DynamicOptionsField extends Field
     /**
      * @inheritdoc
      */
-    public function getContentColumnType(): string
+    public function normalizeValue(mixed $value, ?ElementInterface $element): mixed
     {
-        return Schema::TYPE_STRING;
-    }
+        if ($value === null || $value === '' || !is_scalar($value)) {
+            return null;
+        }
 
-    /**
-     * @inheritdoc
-     */
-    public function normalizeValue(mixed $value, ElementInterface $element = null): mixed
-    {
-        return $value;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function serializeValue(mixed $value, ElementInterface $element = null): mixed
-    {
-        return parent::serializeValue($value, $element);
+        return (string)$value;
     }
 
     /**
@@ -101,54 +112,77 @@ class DynamicOptionsField extends Field
         );
     }
 
+    // Protected Methods
+    // =========================================================================
+
     /**
      * @inheritdoc
      */
-    public function getInputHtml(mixed $value, ElementInterface $element = null): string
+    protected function inputHtml(mixed $value, ?ElementInterface $element, bool $inline): string
     {
-        // Register our asset bundle
-        //Craft::$app->getView()->registerAssetBundle(DynamicOptionsFieldFieldAsset::class);
+        $options = $this->options($element);
 
-        // Get our id and namespace
-        $id = Craft::$app->getView()->formatInputId($this->handle);
-        $namespacedId = Craft::$app->getView()->namespaceInputId($id);
+        if ($options === null) {
+            return $this->optionsErrorHtml();
+        }
 
-        $oldMode = Craft::$app->getView()->getTemplateMode();
-        Craft::$app->getView()->setTemplateMode('site');
+        $value = $this->normalizeValue($value, $element);
 
-        $variables = [];
-        /**foreach(Craft::$app->globals->getAllSets() as $globalSet)
-        {
-            $variables[$globalSet->handle] = $globalSet;
-        }*/
-        $variables['element'] = $element;
-        //$variables['model'] = $this->model;
-
-        $options = Json::decode('['.Craft::$app->getView()->renderString($this->json, $variables).']', true);
-        Craft::$app->getView()->setTemplateMode($oldMode);
-
-        // Variables to pass down to our field JavaScript to let it namespace properly
-        $jsonVars = [
-            'id' => $id,
+        return Cp::selectHtml([
+            'id' => $this->getInputId(),
+            'describedBy' => $this->describedBy,
             'name' => $this->handle,
-            'namespace' => $namespacedId,
-            'prefix' => Craft::$app->getView()->namespaceInputId(''),
-            ];
-        $jsonVars = Json::encode($jsonVars);
-       // Craft::$app->getView()->registerJs("$('#{$namespacedId}-field').DynamicOptionsDynamicOptionsField(" . $jsonVars . ");");
+            'value' => $value,
+            'options' => $this->withStoredValues($options, $value === null ? [] : [$value]),
+        ]);
+    }
 
-        // Render the input template
-        return Craft::$app->getView()->renderTemplate(
-            //'dynamic-options/_components/fields/DynamicOptionsField_input',
-            '_includes/forms/select',
-            [
-                'name' => $this->handle,
-                'value' => $value,
-                'field' => $this,
-                'options' => $options,
-                'id' => $id,
-                'namespacedId' => $namespacedId,
-            ]
-        );
+    /**
+     * Renders the field’s Twig in site mode and decodes it into select options.
+     *
+     * Returns null (and logs why) when the Twig throws or does not produce valid JSON.
+     */
+    protected function options(?ElementInterface $element): ?array
+    {
+        try {
+            $output = Craft::$app->getView()->renderString($this->json, ['element' => $element], View::TEMPLATE_MODE_SITE);
+            $options = Json::decode('[' . $output . ']');
+        } catch (\Throwable $e) {
+            Craft::warning("The options for field “{$this->handle}” could not be built: {$e->getMessage()}", __METHOD__);
+            return null;
+        }
+
+        return is_array($options) ? $options : null;
+    }
+
+    /**
+     * Adds any stored value missing from the options, so saving the element does not silently change or drop it.
+     */
+    protected function withStoredValues(array $options, array $values): array
+    {
+        $known = [];
+        foreach ($options as $option) {
+            if (is_array($option) && isset($option['value'])) {
+                $known[] = (string)$option['value'];
+            }
+        }
+
+        foreach ($values as $value) {
+            if (!in_array((string)$value, $known, true)) {
+                $options[] = ['label' => (string)$value, 'value' => (string)$value];
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * Returns the message shown in place of the input when the options could not be built.
+     */
+    protected function optionsErrorHtml(): string
+    {
+        return Html::tag('p', Craft::t('dynamic-options', 'This field’s options could not be built. Check that its Twig outputs valid JSON.'), [
+            'class' => 'error',
+        ]);
     }
 }
